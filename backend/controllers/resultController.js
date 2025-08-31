@@ -15,8 +15,11 @@ const searchGitHub = async (req, res) => {
 
     // Filter results to only include English language repositories
     const filteredItems = data.items.filter(item => {
-      if (!item.language) return false;
-      return item.language.toLowerCase() === 'english';
+      // Skip if description contains Chinese characters
+      if (item.description && /[\u4e00-\u9fff]/.test(item.description)) return false;
+      // Skip if name contains Chinese characters
+      if (item.name && /[\u4e00-\u9fff]/.test(item.name)) return false;
+      return true;
     });
 
     // Save top 5 filtered results to DB
@@ -29,7 +32,13 @@ const searchGitHub = async (req, res) => {
       stars: item.stargazers_count,
     }));
 
-    await Result.insertMany(results);
+    console.log(`Filtered results count: ${results.length}`);
+    if (results.length > 0) {
+      await Result.insertMany(results);
+      console.log('Results saved to database');
+    } else {
+      console.log('No results to save');
+    }
 
     res.json({ message: 'Results saved', results });
   } catch (error) {
