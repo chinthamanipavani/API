@@ -13,8 +13,14 @@ const searchGitHub = async (req, res) => {
     }
     const data = await response.json();
 
-    // Save top 5 results to DB
-    const results = data.items.slice(0, 5).map(item => ({
+    // Filter results to only include English language repositories
+    const filteredItems = data.items.filter(item => {
+      if (!item.language) return false;
+      return item.language.toLowerCase() === 'english';
+    });
+
+    // Save top 5 filtered results to DB
+    const results = filteredItems.slice(0, 5).map(item => ({
       keyword,
       name: item.name,
       description: item.description,
