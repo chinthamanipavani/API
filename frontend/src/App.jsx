@@ -9,7 +9,8 @@ function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = "https://api-fvel.onrender.com/";
+  // ✅ Removed trailing slash
+  const API_BASE_URL = "https://api-fvel.onrender.com";
 
   useEffect(() => {
     fetchDashboardResults();
